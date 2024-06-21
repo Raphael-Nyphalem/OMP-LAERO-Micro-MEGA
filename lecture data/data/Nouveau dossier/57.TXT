@@ -1,0 +1,2 @@
+id HH MM SS longitude latitude altitude adc_1_ch0 adc_1_ch1 adc_1_ch2 adc_1_ch3 adc_1_ch4 adc_1_ch5 adc_1_ch6 adc_1_ch7 adc_1_ch8 adc_2_ch0 adc_2_ch1 adc_2_ch2 adc_2_ch3 adc_2_ch4 adc_2_ch5 adc_2_ch6 adc_2_ch7 adc_2_ch8 temp hum pres t_prog t_gps t_split t_adc t_temp t_hum t_pres trame_gga
+0 Nan Nan Nan Nan Nan Nan 1101010111 1000 1110011 1000 1110010 111111111111 111111111111 111111111111 111111111111 1101011101 110 1110001 110 1110000 111111111111 111111111111 111111111111 111111111111 21.625 55.550 795.83 980 16 -125 11 59 50 4 $GNGGA,,,,,,0,00,99.9,,,,,,*6F
