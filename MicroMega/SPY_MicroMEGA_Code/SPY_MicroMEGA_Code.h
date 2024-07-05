@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-const bool PRINT_MSG_SERIAL = true;
+const bool PRINT_MSG_SERIAL = false;
 
 /**
  * @brief Structure représentant les temps d'exécution des différentes fonctions.
