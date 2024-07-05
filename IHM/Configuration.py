@@ -1,9 +1,16 @@
+"""
+    Ce module permet de définir les paramètres et les configurations utilisés dans le système.
+    Il contient plusieurs variables clés pour la personnalisation et le fonctionnement du programme.
+"""
 
+#from config_vide import config_vide
 from config_466 import config_466
 from config_467 import config_467
 
 configADC1 = config_466
 configADC2 = config_467
+
+COM = 'COM3'
 
 VREF = 1.560
 

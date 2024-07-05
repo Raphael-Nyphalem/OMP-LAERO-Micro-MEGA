@@ -29,7 +29,7 @@ void init_SD()
   Serial.println(sd_filename);
 
   File fichier = SD.open(sd_filename, FILE_WRITE);
-  fichier.println("id HH MM SS longitude latitude altitude adc_1_ch0_Temperature adc_1_ch1 adc_1_ch2 adc_1_ch3 adc_1_ch4 adc_1_ch5 adc_1_ch6 adc_1_ch7 adc_1_ch8 adc_2_ch0_Temperature adc_2_ch1 adc_2_ch2 adc_2_ch3 adc_2_ch4 adc_2_ch5 adc_2_ch6 adc_2_ch7 adc_2_ch8 temp hum pres temp_baro t_prog");
+  fichier.println("id HH MM SS longitude latitude altitude adc_1_ch0_Temperature adc_1_ch1 adc_1_ch2 adc_1_ch3 adc_1_ch4 adc_1_ch5 adc_1_ch6 adc_1_ch7 adc_1_ch8 adc_2_ch0_Temperature adc_2_ch1 adc_2_ch2 adc_2_ch3 adc_2_ch4 adc_2_ch5 adc_2_ch6 adc_2_ch7 adc_2_ch8 temp hum pres temp_baro t_prog date");
   fichier.close();
 }
 
@@ -43,7 +43,8 @@ void ecriture_sd(
                 char temp_baro[TAILLE_TEMP_BARO],
                 donnee_GPS* donnee_GPS,
                 donnee_Alphasense* adc1,
-                donnee_Alphasense* adc2 )
+                donnee_Alphasense* adc2,
+                char date[TAILLE_DATE] )
 {
     //=============== SD ===============//
     File fichier = SD.open(sd_filename, FILE_WRITE);    //Ouvre le ficher de sauvgarde data.txt, IMPORTANT : penser à ajouter la date !!
@@ -157,6 +158,9 @@ void ecriture_sd(
 
       //temps du programme
       fichier.print(*pgmTime);
+      fichier.print(" ");
+
+      fichier.print(date);
       fichier.print(" ");
 
       // fichier.print(timeF->alphasens);

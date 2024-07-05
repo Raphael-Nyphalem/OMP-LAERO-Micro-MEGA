@@ -6,14 +6,13 @@ void setupRadio(void) {
     radio.begin(57600,SERIAL_8N1);
     radio.write(START_COMMANDE_AT,3);
     _attente();
-    // delay(1000);
-    sendATCommand("ATS2=188");//188 vitesse dans l'air 188 000 bit/s
-    
-    sendATCommand("ATS3=169");//NETID id pour la communication
+    delay(1000);
+    sendATCommand("ATS2="+AIR_SPEED);//188 vitesse dans l'air 188 000 bit/s
+    sendATCommand("ATS3="+NETID);//NETID id pour la communication
 
-    sendATCommand("ATS4=10");//25mW
+    sendATCommand("ATS4="+TXPOWER);//25mW
 
-    sendATCommand("ATS11=1");//1% duty cycle
+    sendATCommand("ATS11="+DUTY_CYCLE);//1% duty cycle
     sendATCommand("AT&W");
     sendATCommand(REBOOT);//stop commande
     
@@ -36,7 +35,7 @@ void sendATCommand(String command) {
         break;
     }
     uint32_t test  = (millis() - tempPres );
-    if (test > 3000)
+    if (test > 700)
     {
       Serial.print(test);
       tempPres = millis();

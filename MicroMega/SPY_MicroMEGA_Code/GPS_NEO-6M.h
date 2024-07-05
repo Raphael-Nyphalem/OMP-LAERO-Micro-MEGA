@@ -23,6 +23,7 @@ const uint8_t TAILLE_UTC = 9;
 const uint8_t TAILLE_LONG = 11;
 const uint8_t TAILLE_LAT = 11;
 const uint8_t TAILLE_ALT = 5;
+const uint8_t TAILLE_DATE = 7;
 
 const unsigned char UBLOX_INIT[] = {
   0xB5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xD0, 0x08, 0x00, 0x00, 0x00, 0xC2, 0x01, 0x00, 0x07, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC4, 0x96, //baudrate 115200 pt1
@@ -91,8 +92,15 @@ void lecture_gps(trameNMEA *GPSBuffer,trameNMEA *trameGGA);
 void split_trame_gga(trameNMEA *trameGGA,struct donnee_GPS *donnee_GPS);
 
 
-bool lectureGGA(trameNMEA *GPSBuffer);
+// bool lectureGGA(trameNMEA *GPSBuffer);
 
+/**
+ * @brief Vide le tampon de réception du port GPS.
+ * 
+ * Cette fonction lit et jette tous les caractères disponibles dans le tampon de réception du port GPS.
+ * Si l'option PRINT_MSG_SERIAL est activée, elle affiche "FLUSH" via la liaison série.
+ */
+void flush();
 
 /**
  * @brief Analyse les données NMEA reçues du module GPS.
@@ -114,5 +122,23 @@ bool lectureNMEA(trameNMEA *GPSBuffer);
  */
 bool isGGA(trameNMEA *GPSBuffer);
 
+/**
+ * @brief Vérifie si la trame NMEA est de type RMC.
+ * 
+ * @param GPSBuffer Pointeur vers une structure trameNMEA contenant la trame NMEA à vérifier.
+ * @return true si la trame correspond au type RMC, false sinon.
+ */
+bool isRMC(trameNMEA *GPSBuffer);
+
+/**
+ * @brief Lit la date à partir d'une trame NMEA de type RMC.
+ * 
+ * Cette fonction parcourt la trame NMEA pour extraire la date à partir du 10ème champ séparé par des virgules (,).
+ * Si le champ n'est pas présent ou est vide, elle retourne une chaîne "NaN".
+ * 
+ * @param trameGGA Pointeur vers une structure trameNMEA contenant la trame NMEA à analyser.
+ * @param date Tableau de caractères où la date extraite sera stockée (doit être de taille suffisante, au moins 7 caractères).
+ */
+void read_date_RMC(trameNMEA *trameGGA,char date[TAILLE_DATE]);
 
 #endif // GPS_NEO_6M

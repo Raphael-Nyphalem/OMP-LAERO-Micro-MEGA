@@ -27,16 +27,16 @@ const uint8_t TAILLE_TEMP_BARO = 7;
 void init_barometre();
 
 /**
- * @brief Lit la pression barométrique à partir du capteur BMP3XX.
+ * @brief Lecture de la pression et de la température barométrique à partir du capteur BMP.
  * 
- * Cette fonction effectue une lecture du capteur BMP3XX et stocke la pression mesurée
- * dans une chaîne de caractères. Si la lecture échoue ou si la pression est hors des
- * limites (300-1100 hPa), la valeur "Nan" est renvoyée.
+ * Cette fonction lit la pression et la température barométrique à partir du capteur BMP180/BMP280.
+ * Elle convertit les données lues en chaînes de caractères formatées et les place dans les tableaux fournis.
+ * Si la lecture échoue, elle enregistre des valeurs par défaut et indique un échec de lecture.
  * 
- * @param[out] pres Tableau de caractères où la pression sera stockée.
- * 
- * @note La pression est exprimée en hectopascals (hPa).
- * @note En cas d'échec de la lecture, un message d'erreur est affiché sur le port série.
+ * @param pres Tableau de caractères où enregistrer la pression barométrique.
+ *        La taille du tableau doit être au moins TAILLE_PRES.
+ * @param temp_baro Tableau de caractères où enregistrer la température barométrique.
+ *        La taille du tableau doit être au moins TAILLE_TEMP_BARO.
  */
 void lecture_barometre(char pres[TAILLE_PRES],char temp_baro[TAILLE_TEMP_BARO]);
 

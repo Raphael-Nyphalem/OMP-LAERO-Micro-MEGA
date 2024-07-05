@@ -125,8 +125,7 @@ class Open_SD_MicroMEGA:
     def tableau_de_mesure(self):
         tableau_valeur_mesurer =self.import_tableau_float_csv()
         data = np.asarray(tableau_valeur_mesurer[1:])
-
-        num_data = np.float64(data[:,:-1])
+        num_data = np.float64(data[:,:-2]) #on del les 2 dernière colone (qui sont la date et un vide)
         return num_data
     
     def import_tableau_float_csv(self):
@@ -141,7 +140,10 @@ class Open_SD_MicroMEGA:
                     None
                 else:
                     if(elem!='nan' and elem!=''):
-                        result.append(float(elem.replace('\00','')))
+                        try:
+                            result.append(float(elem.replace('\00','')))
+                        except:
+                            result.append('')
                     else:
                         result.append('')
             x+=1
@@ -176,7 +178,7 @@ if(__name__ == "__main__"):
     """
     from config_466 import config_466
     from config_467 import config_467
-    data = Open_SD_MicroMEGA("data/0.csv",config_466,config_467)
+    data = Open_SD_MicroMEGA("data/020724.csv",config_466,config_467)
 
     def show(x,dat,name = " ",unite=" "):
         fig, ax = plt.subplots() 
@@ -207,6 +209,8 @@ if(__name__ == "__main__"):
     print(np.min(a))
     print(np.average(a))
     print(np.sum(a>1500))
+    print(np.sum(a<900))
+    print(np.sum(a<500))
 
     b =data.id[1:] - data.id[:-1]
     print(b)
@@ -215,10 +219,24 @@ if(__name__ == "__main__"):
     print(np.sum(b<1.5))
     print(np.sum(b>1.5))
 
+    for i in range(len(a)):
+        if a[i]<500:
+            print(i)
+
+    names = np.arange(222,1016,1)
+
+    values = []
+
+    for i in names:
+        val = np.sum(a==i)
+        values.append(val)
+
+    plt.bar(names, values) ; plt.show()
+
     show(data.id,data.temperature)
-    show(data.id,data.temperature_baro)
-    show(data.id,data.temperature_ADC1)
-    show(data.id,data.temperature_ADC2)
+    # show(x,temperature_baro)
+    # show(x,temperature_ADC1)
+    # show(x,temperature_ADC2)
     # show(x,pression)
     # show(x,humidite)
     # show(x,altitude)

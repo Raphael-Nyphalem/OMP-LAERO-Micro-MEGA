@@ -49,7 +49,9 @@ void setup() {
 //**********************************************************************************************//
 void loop() {
   static uint32_t id = 0;
-  bool gps_buff_good = false;
+  bool gps_buff_good_RMC = false;
+  static bool flag_RMC = false;
+  bool gps_buff_good_GGA = false;
   
 
   static unsigned long temps_passer = millis();
@@ -61,6 +63,9 @@ void loop() {
   static unsigned long t_gps_gga;
 
   static trameNMEA GPS_buff;
+  static trameNMEA trameRMC;
+
+
   
 
   if (flag_gga==false)
@@ -68,9 +73,26 @@ void loop() {
     t_gps_gga = millis();
 
   }
+
+  if (lectureNMEA(&GPS_buff))
+  {
+    gps_buff_good_RMC = isRMC(&GPS_buff);
+    gps_buff_good_GGA = isGGA(&GPS_buff);
+  }
+
+  if (gps_buff_good_RMC)
+  {
+    lecture_gps(&GPS_buff,&trameRMC);
+    flag_RMC = true;
+  }
+  else if (gps_buff_good_GGA)
+  {
+    flush();
+  }
+  
   
 
-  gps_buff_good = lectureGGA(&GPS_buff);
+  // gps_buff_good_GGA = lectureGGA(&GPS_buff);
 
   
   if (temp_ecoule >= 1005)
@@ -80,7 +102,7 @@ void loop() {
     }
   else 
   {
-     if (gps_buff_good && flag_gga== false)
+     if (gps_buff_good_GGA && flag_gga== false)
     {
       if(PRINT_MSG_SERIAL)
       {
@@ -95,28 +117,29 @@ void loop() {
   }
   
   if ((flag_1Hz==true) || (flag_gga == true ))//&& temp_ecoule > 990) engendre des problème d'id
-    {
-      
-      temps_passer = millis();
-      flag_1Hz = false;
-      
+  {
+    
+    temps_passer = millis();
+    flag_1Hz = false;
+    
 
-      char temp[TAILLE_TEMP];
-      char hum[TAILLE_HUM];
-      char pres[TAILLE_PRES];
-      char temp_baro[TAILLE_TEMP_BARO];
+    char temp[TAILLE_TEMP];
+    char hum[TAILLE_HUM];
+    char pres[TAILLE_PRES];
+    char temp_baro[TAILLE_TEMP_BARO];
+    char date[TAILLE_DATE];
 
-      trameNMEA trameGGA;
-      struct donnee_GPS donnee_GPS;
-      
+    trameNMEA trameGGA;
+    struct donnee_GPS donnee_GPS;
+    
 
-      struct donnee_Alphasense adc1;
-      struct donnee_Alphasense adc2;
-      char tab_adc_brut_radio[TAILLE_TAB_DATA_ADC_RADIO] = {0};
-      
-      unsigned long pgmTime = {0};
-      unsigned long t_pres; 
-      struct temps_fonction timeF;
+    struct donnee_Alphasense adc1;
+    struct donnee_Alphasense adc2;
+    char tab_adc_brut_radio[TAILLE_TAB_DATA_ADC_RADIO] = {0};
+    
+    unsigned long pgmTime = {0};
+    unsigned long t_pres; 
+    struct temps_fonction timeF;
 
     t_pres = millis();
     pgmTime = t_pres; //Temps depuis l'exécution du programme
@@ -189,6 +212,14 @@ void loop() {
     }
     flag_gga = false;
 
+    if (flag_RMC)
+    {
+      Serial.println("READ RMC");
+      read_date_RMC(&trameRMC,date);
+      flag_RMC = false;
+    }
+    
+
 
     split_trame_gga(&trameGGA,&donnee_GPS);
 
@@ -199,6 +230,11 @@ void loop() {
     //<<-------------<< Affichage GPS Data >>------------->>//
     if(PRINT_MSG_SERIAL)
     {
+      Serial.print("date : ");
+      for (int k = 0; k < (TAILLE_DATE); k++) {
+        Serial.print(date[k]);
+      }
+      Serial.print(" ");
       Serial.print("UTC : ");
       for (int k = 0; k < (TAILLE_UTC); k++) {
         Serial.print(donnee_GPS.utc[k]);
@@ -259,10 +295,10 @@ void loop() {
   
 
     ecriture_sd(sd_filename,id,&pgmTime,temp, hum,pres,temp_baro,
-                &donnee_GPS,&adc1,&adc2);
+                &donnee_GPS,&adc1,&adc2,date);
       uint16_t t_SD = millis() - t_pres;
       t_pres += t_SD;
-   
+  
     ecriture_radio(temp, hum, pres,&donnee_GPS,tab_adc_brut_radio);
 
       uint16_t t_radio = millis() - t_pres;

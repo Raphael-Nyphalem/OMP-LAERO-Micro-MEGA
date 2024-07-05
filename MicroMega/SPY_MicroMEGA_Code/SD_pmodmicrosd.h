@@ -28,23 +28,24 @@ void init_SD();
 
 
 /**
- * @brief Écrit les données dans un fichier sur la carte SD.
+ * @brief Écriture des données dans un fichier sur une carte SD.
  * 
- * Écrit les données fournies dans un fichier sur la carte SD.
- * Les données comprennent l'identifiant, les informations GPS, les données des capteurs ADC,
- * la température, l'humidité, la pression, les temps du programme et les trames GPS.
+ * Cette fonction écrit les données passées en paramètres dans un fichier spécifié sur une carte SD.
+ * Elle utilise un format de trame défini pour organiser les différentes informations.
  * 
- * @param sd_filename Nom du fichier sur la carte SD.
- * @param id Identifiant.
- * @param pgmTime Pointeur vers le temps du programme.
- * @param temp Tableau contenant la température.
- * @param hum Tableau contenant l'humidité.
- * @param pres Tableau contenant la pression.
- * @param trameGGA Pointeur vers la structure contenant la trame GPS.
- * @param donnee_GPS Pointeur vers la structure contenant les données GPS.
- * @param adc1 Pointeur vers la structure contenant les données des capteurs ADC1.
- * @param adc2 Pointeur vers la structure contenant les données des capteurs ADC2.
- * @param timeF Pointeur vers la structure contenant les temps.
+ * @param sd_filename Nom du fichier sur la carte SD où écrire les données.
+ * @param id Identifiant à enregistrer dans le fichier.
+ * @param pgmTime Temps du programme au moment de l'enregistrement.
+ * @param temp Tableau de caractères représentant la température.
+ * @param hum Tableau de caractères représentant l'humidité.
+ * @param pres Tableau de caractères représentant la pression.
+ * @param temp_baro Tableau de caractères représentant la température barométrique.
+ * @param donnee_GPS Pointeur vers une structure contenant les données GPS.
+ * @param adc1 Pointeur vers une structure contenant les données du premier capteur Alphasense.
+ * @param adc2 Pointeur vers une structure contenant les données du second capteur Alphasense.
+ * 
+ * @note Cette fonction vérifie si le fichier spécifié existe et est ouvert avec succès avant d'écrire les données.
+ * Elle gère également les cas où la carte SD n'est pas détectée ou où il y a des erreurs de connexion.
  */
 void ecriture_sd(
                 String sd_filename,
@@ -56,7 +57,9 @@ void ecriture_sd(
                 char temp_baro[TAILLE_TEMP_BARO],
                 donnee_GPS* donnee_GPS,
                 donnee_Alphasense* adc1,
-                donnee_Alphasense* adc2);
+                donnee_Alphasense* adc2,
+                char date[TAILLE_DATE]
+                );
 
 
 #endif // SD_PMODMICROSD

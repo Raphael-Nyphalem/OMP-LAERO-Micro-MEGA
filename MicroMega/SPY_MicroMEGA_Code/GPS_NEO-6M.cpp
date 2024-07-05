@@ -27,7 +27,7 @@ void lecture_gps(trameNMEA *GPSBuffer,trameNMEA *trameGGA)
     //<<-------------<< Affichage GPS TrameGGA >>------------->>//
     if(PRINT_MSG_SERIAL)
     {
-      Serial.print("trameGGA :  ");
+      Serial.print("trame :  ");
       Serial.print(trameGGA->trame);
       Serial.println("<== FIN ==>");
     }
@@ -241,24 +241,31 @@ void split_trame_gga(trameNMEA *trameGGA,struct donnee_GPS *donnee_GPS)
     //<<--------------------------------------------------->>//
 }
 
-bool lectureGGA(trameNMEA *GPSBuffer)
-{
-  bool gps_buff_good = false;
-    if (lectureNMEA(GPSBuffer))
-    {
-      gps_buff_good=isGGA(GPSBuffer);
-      if (gps_buff_good)
-      {
-        while (gps_port.available()) { 
-          char inChar = gps_port.read();
-          }//vide buffer
-        if(PRINT_MSG_SERIAL){
-          Serial.println("FLUSH");
-          }
-      }
+// bool lectureGGA(trameNMEA *GPSBuffer)
+// {
+//   bool gps_buff_good = false;
+//     if (lectureNMEA(GPSBuffer))
+//     {
+//       gps_buff_good=isGGA(GPSBuffer);
+//       if (gps_buff_good)
+//       {
+//           flush();
+//       }
       
-    }
-  return gps_buff_good;
+//     }
+//   return gps_buff_good;
+// }
+
+void flush()
+{
+  while (gps_port.available()) 
+  { 
+    char inChar = gps_port.read();
+  }//vide buffer
+  if(PRINT_MSG_SERIAL)
+  {
+    Serial.println("FLUSH");
+  }
 }
 
 bool lectureNMEA(trameNMEA *GPSBuffer){
@@ -290,8 +297,8 @@ bool lectureNMEA(trameNMEA *GPSBuffer){
       {
         detect_new_line=false;
       }
-      
   }
+
   if(PRINT_MSG_SERIAL && gps_buff_good)
     {
       Serial.print("---->");
@@ -306,4 +313,63 @@ bool isGGA(trameNMEA *GPSBuffer){
             && GPSBuffer->trame[3] == 'G' 
             && GPSBuffer->trame[4] == 'G' 
             && GPSBuffer->trame[5] == 'A');
+}
+
+bool isRMC(trameNMEA *GPSBuffer)
+{
+  return (GPSBuffer->trame[1] == 'G' 
+            && (GPSBuffer->trame[2] == 'P' || GPSBuffer->trame[2] == 'N') 
+            && GPSBuffer->trame[3] == 'R' 
+            && GPSBuffer->trame[4] == 'M' 
+            && GPSBuffer->trame[5] == 'C');
+}
+
+void read_date_RMC(trameNMEA *trameGGA,char date[TAILLE_DATE])
+{
+  bool fin_data = true;
+  int total_size = 0;
+  int c_cpt = 0;
+  int index = 0;
+  int Aux = 0;
+
+  while (index < (trameGGA->taille) && fin_data) {
+    
+    if (trameGGA->trame[index] == ',') {
+      c_cpt++ ;
+
+      switch (c_cpt)
+      {
+      case 10:
+        fin_data = false;
+        if (index - Aux > 0) {         //Si data non vide
+          int date_size = index - Aux;
+          for (int i = 0; i < date_size; i++) {
+            date[i] = trameGGA->trame[Aux];
+            Aux++;
+          }
+          date[6]= '\0';
+          Aux = index + 1;
+          index++;
+        }
+        else {
+          date[0] = 'N';
+          date[1] = 'a';
+          date[2] = 'n';
+          date[3] = '\0';
+          for (int i = 0; i < sizeof(date); i++) {
+            Aux++;
+          }
+          Aux = index + 1;
+          index++;
+        }
+        break;
+      
+      default:
+        Aux = index + 1;
+        break;
+      }
+    }
+    index++;
+  }
+  
 }
